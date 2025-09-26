@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>响应式布局 Demo</title>
+  <style>
+    /* 全局设置 */
+    :root{
+      --bg:#0f172a;      /* 深背景 */
+      --fg:#e2e8f0;      /* 浅前景 */
+      --muted:#94a3b8;   /* 次级文字 */
+      --card:#111827;    /* 卡片背景 */
+      --accent:#22d3ee;  /* 强调色 */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);
+        color:var(--fg);
+        font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji"}
+    a{color:inherit;text-decoration:none}
+
+    /* 顶部导航（Flex 一维布局） */
+    .nav{display:flex;align-items:center;
+        justify-content:space-between;
+        gap:1rem;padding:1rem 2rem;
+        border-bottom:1px solid #1f2937;
+        background:#0b1226;position:sticky;
+        top:0;z-index:10}
+    .brand{font-weight:700}
+    .brand span{color:var(--accent)}
+    .nav-links{display:flex;gap:1.25rem;flex-wrap:wrap}
+    /**
+        display: flex;
+        Turns .nav-links into a Flex container, so its children are laid out along the main axis (horizontal by default).
+        gap:1.25rem;
+        Defines the spacing between flex items. 1.25rem means 1.25 times the root font size (typically 1rem = 16px, so 1.25rem = 20px).
+        flex-wrap:wrap;
+        Allows the flex items to wrap onto multiple lines if they exceed the container's width. This is particularly useful for responsiveness on smaller screens.
+    */
+
+
+    /* Hero 区：使用 vh/vw */
+    .hero{min-height:50vh; /* 关键：随视口高度 */
+          display:grid;place-items:center;padding:4vh 2vw; /* 视口单位做留白 */
+          background: radial-gradient(60% 80% at 50% 0%, rgba(34,211,238,.15), transparent 60%)}
+    .hero h1{font-weight:800;letter-spacing:.5px;
+             font-size:clamp(24px, 5vw, 52px); /* 关键：随视口宽度缩放 */
+             margin:0 0 .5rem}
+    .hero p{margin:0;color:var(--muted)}
+
+    /* 主内容：Grid 二维布局 + 百分比宽度示例 */
+    .wrapper{max-width:1200px;margin:0 auto;padding:2rem}
+
+    /* 三栏 -> 两栏 -> 单栏 */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:1.25rem;
+    }
+
+    .card{background:var(--card);border:1px solid #1f2937;border-radius:14px;padding:1rem;box-shadow:0 1px 0 rgba(255,255,255,.04) inset}
+    .card h3{margin:.25rem 0 .5rem}
+    .card p{color:var(--muted);margin:0}
+
+    /* 百分比用法：图片与进度条 */
+    .thumb{width:100%; /* 关键：基于父元素宽度的 % */
+           aspect-ratio:16/9;border-radius:10px;overflow:hidden;border:1px solid #1f2937;margin-bottom:.75rem}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .progress{height:10px;background:#0b1226;border:1px solid #1f2937;border-radius:999px;margin-top:.75rem;overflow:hidden}
+    .progress > i{display:block;height:100%;width:70%; /* 关键：70% 代表进度 */
+                  background:linear-gradient(90deg, var(--accent), #60a5fa)}
+
+    /* 页脚 */
+    footer{padding:2rem;color:var(--muted);text-align:center}
+
+    /* 断点：平板（≤1024px） */
+    @media (max-width: 1024px){
+      .grid{grid-template-columns: repeat(2, 1fr)}
+      .nav{padding:1rem}
+    }
+
+    /* 断点：手机（≤600px） */
+    @media (max-width: 600px){
+      .nav{flex-wrap:wrap;gap:.5rem}
+      .nav-links{width:100%;justify-content:space-between}
+      .hero{min-height:42vh;padding:6vh 4vw}
+      .grid{grid-template-columns: 1fr}
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="brand">RWD<span>·</span>Demo</div>
+    <nav class="nav-links">
+      <a href="#">首页</a>
+      <a href="#">案例</a>
+      <a href="#">文档</a>
+      <a href="#">关于</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="wrapper" style="padding:0">
+      <h1>响应式布局：Media Queries × % × vh/vw </h1>
+      <p>调整浏览器宽度，观察导航折行、网格列数变化、标题随视口缩放。</p>
+    </div>
+  </section>
+
+  <main class="wrapper">
+    <div class="grid">
+      <article class="card">
+        <div class="thumb"><img src="https://picsum.photos/seed/1/800/450" alt="示例图"/></div>
+        <h3>Grid：桌面三栏</h3>
+        <p>容器使用 <code>display: grid</code> 与 <code>grid-template-columns: repeat(3, 1fr)</code>，在断点处切换为两栏或单栏。</p>
+        <div class="progress"><i></i></div>
+      </article>
+      <article class="card">
+        <div class="thumb"><img src="https://picsum.photos/seed/2/800/450" alt="示例图"/></div>
+        <h3>Flex：导航与分布</h3>
+        <p>顶部导航使用 Flex 管理横向排列与换行（手机断点下 <code>flex-wrap</code> 生效）。</p>
+        <div class="progress"><i style="width:45%"></i></div>
+      </article>
+      <article class="card">
+        <div class="thumb"><img src="https://picsum.photos/seed/3/800/450" alt="示例图"/></div>
+        <h3>视口单位：vh / vw</h3>
+        <p>Hero 最小高度 <code>min-height: 50vh</code>，标题大小 <code>clamp(24px, 5vw, 52px)</code> 随视口缩放。</p>
+        <div class="progress"><i style="width:90%"></i></div>
+      </article>
+      <article class="card">
+        <div class="thumb"><img src="https://picsum.photos/seed/4/800/450" alt="示例图"/></div>
+        <h3>百分比：流式图片</h3>
+        <p>图片使用 <code>width:100%</code> 和 <code>height:auto</code>（通过 <code>object-fit</code> 保持裁切）。</p>
+        <div class="progress"><i style="width:60%"></i></div>
+      </article>
+      <article class="card">
+        <div class="thumb"><img src="https://picsum.photos/seed/5/800/450" alt="示例图"/></div>
+        <h3>断点：1024px</h3>
+        <p>当 <code>@media (max-width:1024px)</code> 时，网格从 3 列变 2 列。</p>
+        <div class="progress"><i style="width:30%"></i></div>
+      </article>
+      <article class="card">
+        <div class="thumb"><img src="https://picsum.photos/seed/6/800/450" alt="示例图"/></div>
+        <h3>断点：600px</h3>
+        <p>当 <code>@media (max-width:600px)</code> 时，导航折行、Hero 留白增加、网格改为单列。</p>
+        <div class="progress"><i style="width:80%"></i></div>
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <small>Made with Flexbox & Grid · 媒体查询/百分比/vh/vw 示例</small>
+  </footer>
+</body>
+</html>
